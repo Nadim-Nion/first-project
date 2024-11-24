@@ -6,17 +6,55 @@ This is my first project built using **TypeScript**, **Mongoose**, and **Express
 
 ## Features
 
-- Retrieve all students.
-- Retrieve a specific student by ID.
-- Add new student data.
+- **Mongoose Middleware**:
+  - `pre('save')` middleware to hash the password before saving a user document.
+  - `post('save')` middleware to send a notification after a student record is saved.
+- **Virtuals**:
+  - Create a virtual property `fullName` that combines the `firstName` and `lastName` fields.
+- **Custom Validation**:
+
+  - Custom validator for `email` field to ensure it adheres to a specific format (e.g., only accept student emails with domain `@school.com`).
+
+- **Third-Party Validation Library**:
+
+  - Use `Joi` for validating incoming data before saving a new student.
+  - Example: `Joi.object({ name: Joi.string().min(3).required(), email: Joi.string().email().required() })`
+
+- **Custom Instance Method**:
+
+  - Create a method `getStudentProfile()` that returns a student's full profile (including virtual properties like `fullName`).
+
+- **Custom Static Method**:
+  - Implement a static method `findByGrade()` to retrieve all students who belong to a certain grade level.
+
+These additions enhance the functionality and maintainability of the application while adhering to best practices in validation and data manipulation.
 
 ---
 
 ## Technologies Used
 
-- **TypeScript**: For strong typing and improved development experience.
-- **Mongoose**: For seamless interaction with MongoDB.
-- **Express.js**: For building a fast and robust backend API.
+- **TypeScript**:
+
+  - Provides strong typing to improve code reliability, reduce bugs, and enhance developer experience by enabling type safety and autocompletion.
+
+- **Mongoose**:
+
+  - Provides a seamless and powerful way to interact with MongoDB, allowing for defining schemas, model creation, and middleware integration in a simple and efficient manner.
+
+- **Express.js**:
+
+  - A fast, minimal web framework for building robust backend APIs, offering simplicity, flexibility, and extensive support for routing and middleware.
+
+- **Validator.js**:
+
+  - A library that provides string validation and sanitization, making it easy to validate data (e.g., email, URL, or date formats) before processing or saving it.
+
+- **Joi**:
+
+  - A powerful and flexible schema description and validation library for JavaScript, used to validate incoming request data and ensure it adheres to predefined rules (e.g., required fields, data types, and string lengths).
+
+- **Zod**:
+  - A TypeScript-first schema declaration and validation library that offers a type-safe approach to validate data, providing both runtime validation and compile-time type inference.
 
 ---
 
