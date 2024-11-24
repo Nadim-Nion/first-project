@@ -153,12 +153,14 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   },
 });
 
+// Mongoose Virtual
+
 // Pre save middleware/hook: will work on create() or save()
 studentSchema.pre('save', async function (next) {
   // console.log(this, 'pre hook: we will save the data');
-  const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
+  // const user = this;
+  this.password = await bcrypt.hash(
+    this.password,
     Number(config.bcrypt_salt_round),
   );
   next();

@@ -31,10 +31,11 @@ const createStudent = async (req: Request, res: Response) => {
       message: 'Student is created successfully',
       data: result,
     });
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as Error;
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
+      message: error.message || 'Something went wrong',
       error: err,
     });
   }
@@ -49,10 +50,11 @@ const getAllStudents = async (req: Request, res: Response) => {
       message: 'Students are retrieved successfully',
       data: result,
     });
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as Error;
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
+      message: error.message || 'Something went wrong',
       error: err,
     });
   }
@@ -69,10 +71,11 @@ const getSingleStudent = async (req: Request, res: Response) => {
       message: 'Student is retrieved successfully',
       data: result,
     });
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as Error;
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
+      message: error.message || 'Something went wrong',
       error: err,
     });
   }
@@ -89,10 +92,11 @@ const deleteStudent = async (req: Request, res: Response) => {
       message: 'Student is deleted successfully',
       data: result,
     });
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as Error;
     res.status(500).json({
       success: false,
-      message: err.message || 'Something went wrong',
+      message: error.message || 'Something went wrong',
       error: err,
     });
   }
