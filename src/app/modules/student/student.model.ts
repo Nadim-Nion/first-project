@@ -9,8 +9,8 @@ import {
   TUserName,
 } from './student.interface';
 
-import bcrypt from 'bcrypt';
-import config from '../../config';
+// import bcrypt from 'bcrypt';
+// import config from '../../config';
 // import { func } from 'joi';
 
 const userNameSchema = new Schema<TUserName>({
@@ -84,11 +84,17 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'Student ID is required'],
       unique: true,
     },
-    password: {
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User ID is required'],
+      unique: true,
+      ref: 'User',
+    },
+    /* password: {
       type: String,
       required: [true, 'Password is required'],
       maxLength: [20, "Password can't be more than 20 characters"],
-    },
+    }, */
     name: {
       type: userNameSchema,
       required: [true, 'Name is required'],
@@ -140,14 +146,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'Local Guardian information is required'],
     },
     profileImg: { type: String },
-    isActive: {
-      type: String,
-      enum: {
-        values: ['active', 'blocked'],
-        message: '{VALUE} is not a valid status',
-      },
-      default: 'active',
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -165,23 +163,6 @@ studentSchema.virtual('fullName').get(function () {
   return (
     this.name.firstName + ' ' + this.name.middleName + ' ' + this.name.lastName
   );
-});
-
-// Pre save middleware/hook: will work on create() or save()
-studentSchema.pre('save', async function (next) {
-  // console.log(this, 'pre hook: we will save the data');
-  // const user = this;
-  this.password = await bcrypt.hash(
-    this.password,
-    Number(config.bcrypt_salt_round),
-  );
-  next();
-});
-
-// Post save middleware/hook
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
 });
 
 // Query Middleware
