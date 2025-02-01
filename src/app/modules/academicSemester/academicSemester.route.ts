@@ -12,8 +12,18 @@ router.post(
   ),
   AcademicSemesterControllers.createAcademicSemester,
 );
-// router.get('/', StudentControllers.getAllStudents);
-// router.get('/:studentId', StudentControllers.getSingleStudent);
-// router.delete('/:studentId', StudentControllers.deleteStudent);
+
+router.get('/', AcademicSemesterControllers.getAllAcademicSemesters);
+router.get(
+  '/:semesterId',
+  AcademicSemesterControllers.getSingleAcademicSemester,
+);
+router.patch(
+  '/:semesterId',
+  validateRequest(
+    AcademicSemesterValidations.updateAcademicSemesterValidationSchema,
+  ),
+  AcademicSemesterControllers.updateAcademicSemester,
+);
 
 export const AcademicSemesterRoutes = router;
