@@ -1,12 +1,12 @@
-// import { TStudent } from './student.interface';
 import config from '../../config';
-import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
+import { AcademicSemester } from '../academicSemester/academicSemester.model';
 import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
+import { generateStudentId } from './user.utils';
 
-const createStudentIntoDB = async (password: string, studentData: TStudent) => {
+const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
   const userData: Partial<TUser> = {};
 
@@ -21,10 +21,18 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   // set student role
   userData.role = 'student';
 
-  const generateStudentId = (payload: TAcademicSemester) => {};
+  // Find academic semester info
+  const admissionSemester = await AcademicSemester.findById(
+    payload.admissionSemester,
+  );
 
-  // manually generated id
-  userData.id = generateStudentId();
+  // automatically generated id from the server
+  // userData.id = generateStudentId(admissionSemester);
+  if (admissionSemester) {
+    userData.id = generateStudentId(admissionSemester);
+  } else {
+    throw new Error('Admission semester data is missing.');
+  }
 
   // Create a user
   const newUser = await User.create(userData);
@@ -32,10 +40,10 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   // Create a student
   if (Object.keys(newUser).length) {
     // set id, _id as user
-    studentData.id = newUser.id;
-    studentData.user = newUser._id; // reference _id
+    payload.id = newUser.id;
+    payload.user = newUser._id; // reference _id
 
-    const newStudent = await Student.create(studentData);
+    const newStudent = await Student.create(payload);
     return newStudent;
   }
 
