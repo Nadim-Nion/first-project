@@ -38,6 +38,8 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
   const currentSemesterCode = payload.code; // 03
   const currentYear = payload.year; // 2030
 
+  // I have watched the video of Module 13-2 till 5:12 mins
+
   if (
     lastStudentId &&
     lastStudentSemesterCode === currentSemesterCode &&
