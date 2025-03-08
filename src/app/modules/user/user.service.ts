@@ -29,7 +29,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // automatically generated id from the server
   // userData.id = generateStudentId(admissionSemester);
   if (admissionSemester) {
-    userData.id = generateStudentId(admissionSemester);
+    userData.id = await generateStudentId(admissionSemester);
   } else {
     throw new Error('Admission semester data is missing.');
   }
