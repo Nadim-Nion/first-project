@@ -1,10 +1,9 @@
-import { RequestHandler } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import { AcademicFacultyServices } from './academicFaculty.service';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 
-const createAcademicFaculty: RequestHandler = catchAsync(async (req, res) => {
+const createAcademicFaculty = catchAsync(async (req, res) => {
   const result = await AcademicFacultyServices.createAcademicFacultyIntoDB(
     req.body,
   );
