@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import config from '../../config';
 import AppError from '../../errors/AppError';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
@@ -7,7 +8,6 @@ import { TUser } from './user.interface';
 import { User } from './user.model';
 import { generateStudentId } from './user.utils';
 import httpStatus from 'http-status';
-
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -34,20 +34,44 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   if (admissionSemester) {
     userData.id = await generateStudentId(admissionSemester);
   } else {
-    throw new AppError(httpStatus.BAD_REQUEST,'Admission semester data is missing.');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Admission semester data is missing.',
+    );
   }
 
-  // Create a user
-  const newUser = await User.create(userData);
+  const session = await mongoose.startSession();
 
-  // Create a student
-  if (Object.keys(newUser).length) {
+  try {
+    session.startTransaction();
+
+    // Create a user (Transaction-1)
+    const newUser = await User.create([userData], { session });
+    // console.log('newUser', newUser);
+
+    // Create a student (Transaction-2)
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user.');
+    }
     // set id, _id as user
-    payload.id = newUser.id;
-    payload.user = newUser._id; // reference _id
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id; // reference _id
 
-    const newStudent = await Student.create(payload);
+    const newStudent = await Student.create([payload], { session });
+    // console.log('newStudent', newStudent);
+
+    if (!newStudent.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create student.');
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
     return newStudent;
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
   }
 
   // return newUser;

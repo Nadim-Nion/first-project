@@ -20,7 +20,7 @@ const findLastStudentId = async () => {
     })
     .lean();
 
-  console.log('Last Student Id: ', lastStudent); // 203003 0001
+  // console.log('Last Student Id: ', lastStudent); // 203003 0001
 
   return lastStudent?.id ? lastStudent.id : undefined;
 };
