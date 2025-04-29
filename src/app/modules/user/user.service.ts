@@ -1,10 +1,13 @@
 import config from '../../config';
+import AppError from '../../errors/AppError';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
 import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
 import { generateStudentId } from './user.utils';
+import httpStatus from 'http-status';
+
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -31,7 +34,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   if (admissionSemester) {
     userData.id = await generateStudentId(admissionSemester);
   } else {
-    throw new Error('Admission semester data is missing.');
+    throw new AppError(httpStatus.BAD_REQUEST,'Admission semester data is missing.');
   }
 
   // Create a user
