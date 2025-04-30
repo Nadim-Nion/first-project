@@ -25,7 +25,7 @@ const getSingleStudentFromDB = async (id: string) => {
   //     },
   //   },
   // ]);
-  const result = await Student.findOne({id})
+  const result = await Student.findOne({ id })
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -36,31 +36,76 @@ const getSingleStudentFromDB = async (id: string) => {
   return result;
 };
 
-
 const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
-  const result = await Student.findOneAndUpdate({id}, payload, {new: true});
+  const { name, guardian, localGuardian, ...remainingStudentData } = payload;
+
+  const modifiedStudentData: Record<string, unknown> = {
+    ...remainingStudentData,
+  };
+
+  /*
+    guardian: {
+      fatherOccupation:"Teacher"
+    }
+
+    guardian.fatherOccupation = Teacher
+
+    name.firstName = 'John'
+    name.lastName = 'Doe'
+  */
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedStudentData[`name.${key}`] = value;
+    }
+  }
+
+  if (guardian && Object.keys(guardian).length) {
+    for (const [key, value] of Object.entries(guardian)) {
+      modifiedStudentData[`guardian.${key}`] = value;
+    }
+  }
+
+  if (localGuardian && Object.keys(localGuardian).length) {
+    for (const [key, value] of Object.entries(localGuardian)) {
+      modifiedStudentData[`localGuardian.${key}`] = value;
+    }
+  }
+
+  // console.log('modifiedStudentData', modifiedStudentData);
+
+  const result = await Student.findOneAndUpdate({ id }, modifiedStudentData, {
+    new: true,
+    runValidators: true,
+  });
   return result;
 };
 
 const deleteStudentFromDB = async (id: string) => {
-
   const session = await mongoose.startSession();
 
   try {
-
     session.startTransaction();
 
     // Delete student (Transaction-1)
-    const deletedStudent = await Student.findOneAndUpdate({ id: id }, { isDeleted: true }, {new: true, session});
+    const deletedStudent = await Student.findOneAndUpdate(
+      { id: id },
+      { isDeleted: true },
+      { new: true, session },
+    );
 
-    if(!deletedStudent){
+    if (!deletedStudent) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete student.');
     }
 
     // Delete user (Transaction-2)
-    const deletedUser = await User.findOneAndUpdate({id: id}, {isDeleted: true}, {new: true, session});
+    const deletedUser = await User.findOneAndUpdate(
+      { id: id },
+      { isDeleted: true },
+      { new: true, session },
+    );
 
-    if(!deletedUser){
+    if (!deletedUser) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete user.');
     }
 
@@ -70,7 +115,7 @@ const deleteStudentFromDB = async (id: string) => {
     return deletedStudent;
   } catch (error) {
     await session.abortTransaction();
-    await session.endSession()
+    await session.endSession();
     throw error;
   }
 };
