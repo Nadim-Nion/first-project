@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
+import httpStatus from 'http-status';
 
 import {
   TGuardian,
@@ -8,6 +9,7 @@ import {
   StudentModel,
   TUserName,
 } from './student.interface';
+import AppError from '../../errors/AppError';
 
 // import bcrypt from 'bcrypt';
 // import config from '../../config';
@@ -207,6 +209,18 @@ studentSchema.statics.isStudentExists = async function (id: string) {
 
   return existingStudent;
 }; */
+
+studentSchema.pre("findOneAndUpdate", async function(next){
+  const query = this.getQuery();
+
+  const isStudentExist = await Student.findOne(query);
+
+  if(!isStudentExist){
+    throw new AppError(httpStatus.NOT_FOUND, 'Student not found!');
+  }
+
+  next();
+})
 
 // Create a Model
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);
