@@ -1,27 +1,58 @@
-import { NextFunction, Request, Response } from 'express';
+import { ErrorRequestHandler } from 'express';
+import { ZodError } from 'zod';
 
-interface CustomError extends Error {
-  statusCode?: number;
-}
+// interface CustomError extends Error {
+//   statusCode?: number;
+// }
 
-const globalErrorHandler = (
-  err: CustomError,
-  req: Request,
-  res: Response,
+const globalErrorHandler: ErrorRequestHandler = (
+  err,
+  req,
+  res,
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  next: NextFunction,
+  next,
 ) => {
-  console.log('error object', err);
-  const statusCode = err.statusCode || 500;
-  console.log("err in globalErrorHandler:", err);
-  console.log('statusCode in globalErrorHandler:', statusCode);
-  const message = err.message || 'Something went wrong';
+  // Setting default values
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'Something went wrong';
+
+  type TErrorSource = {
+    path: string | number;
+    message: string;
+  }[];
+
+  const errorSources: TErrorSource = [
+    {
+      path: '',
+      message: 'Something went wrong',
+    },
+  ];
+
+  if(err instanceof ZodError){
+    statusCode = 400;
+    message = 'Zod Validation Error';
+  }
 
   res.status(statusCode).json({
     success: false,
     message,
+    errorSources,
     error: err,
   });
 };
 
 export default globalErrorHandler;
+
+/* 
+
+Error Pattern:
+
+success
+message
+errorSources: [
+path: '',
+message: ''
+]
+stack
+
+*/
