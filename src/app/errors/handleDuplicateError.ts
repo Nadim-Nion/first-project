@@ -5,12 +5,12 @@ const handleDuplicateError = (
   err: any,
 ): TGenericErrorResponse => {
   const match = err.message.match(/"([^"]+)"/);
-  const extractedMsg = match && match[1];
+  const extractedMessage = match && match[1];
 
   const errorSources: TErrorSources = [
     {
       path: '',
-      message: `${extractedMsg} already exists`,
+      message: `${extractedMessage} already exists`,
     },
   ];
 
