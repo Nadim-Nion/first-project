@@ -28,11 +28,11 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   });
 
   // Filtering
-  const excludeFields = ['searchTerm', 'sort', 'limit', 'page'];
+  const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
   excludeFields.forEach((el) => delete queryObject[el]);
 
   // console.log("query:", query);
-  console.log("queryObject:", queryObject);
+  // console.log('queryObject:', queryObject);
 
   const filterQuery = searchQuery
     .find(queryObject)
@@ -48,7 +48,6 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   let sort = '-createdAt';
   if (query?.sort) {
     sort = query.sort as string;
-    console.log('sort:', sort);
   }
 
   const sortQuery = filterQuery.sort(sort);
@@ -70,9 +69,18 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
 
   const paginateQuery = sortQuery.skip(skip);
 
-  const limitQuery = await paginateQuery.limit(limit);
+  const limitQuery = paginateQuery.limit(limit);
 
-  return limitQuery;
+  // Field Limiting
+
+  let fields = '-__v';
+  if (query?.fields) {
+    fields = (query.fields as string).split(',').join(' ');
+  }
+
+  const fieldQuery = await limitQuery.select(fields);
+
+  return fieldQuery;
 };
 
 const getSingleStudentFromDB = async (id: string) => {

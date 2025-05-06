@@ -158,8 +158,8 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     },
     academicDepartment: {
       type: Schema.Types.ObjectId,
-      ref: "AcademicDepartment",
-    }
+      ref: 'AcademicDepartment',
+    },
   },
   {
     toJSON: {
@@ -171,7 +171,11 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 // Mongoose Virtual
 studentSchema.virtual('fullName').get(function () {
   return (
-    this.name.firstName + ' ' + this.name.middleName + ' ' + this.name.lastName
+    this.name?.firstName +
+    ' ' +
+    this.name?.middleName +
+    ' ' +
+    this.name?.lastName
   );
 });
 
@@ -210,17 +214,17 @@ studentSchema.statics.isStudentExists = async function (id: string) {
   return existingStudent;
 }; */
 
-studentSchema.pre("findOneAndUpdate", async function(next){
+studentSchema.pre('findOneAndUpdate', async function (next) {
   const query = this.getQuery();
 
   const isStudentExist = await Student.findOne(query);
 
-  if(!isStudentExist){
+  if (!isStudentExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'Student not found!');
   }
 
   next();
-})
+});
 
 // Create a Model
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);
