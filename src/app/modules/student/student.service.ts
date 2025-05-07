@@ -45,6 +45,7 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
     });
 
   // Sorting
+  
   let sort = '-createdAt';
   if (query?.sort) {
     sort = query.sort as string;
