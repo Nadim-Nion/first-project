@@ -6,8 +6,11 @@ import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
-import { generateStudentId } from './user.utils';
+import { findLastFacultyId, generateStudentId } from './user.utils';
 import httpStatus from 'http-status';
+import { TFaculty } from '../faculty/faculty.interface';
+import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
+import { Faculty } from '../faculty/faculty.model';
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -68,7 +71,6 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     await session.endSession();
 
     return newStudent;
-
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
@@ -78,6 +80,46 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // return newUser;
 };
 
+const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+  // create a user object
+  const userData: Partial<TUser> = {};
+
+  // If password is not given, use default password
+  userData.password = password || config.default_password;
+
+  // set faculty role
+  userData.role = 'faculty';
+
+  // Find academic department info
+  const academicDepartment = await AcademicDepartment.findById(
+    payload.academicDepartment,
+  );
+
+  if (!academicDepartment) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Academic department data is missing.',
+    );
+  }
+
+  // Automatically generate id from the server
+  userData.id = await findLastFacultyId();
+
+  // Create a user
+  const newUser = await User.create(userData);
+  console.log('newUser in user.service', newUser);
+
+  // Set id as an embedded field and _id as a user (referenced field)
+  payload.id = newUser.id;
+  payload.user = newUser._id; // reference _id
+
+  // Create a faculty
+  const newFaculty = await Faculty.create(payload);
+  console.log('newFaculty in user.service', newFaculty);
+  return newFaculty;
+};
+
 export const UserServices = {
   createStudentIntoDB,
+  createFacultyIntoDB,
 };

@@ -25,8 +25,7 @@ const findLastStudentId = async () => {
   return lastStudent?.id ? lastStudent.id : undefined;
 };
 
-// I have watched the video of Module 13-1 till 9:14 mins
-
+// Generate Student Id
 export const generateStudentId = async (payload: TAcademicSemester) => {
   // Generated Id will be 0000 for the first student
   let currentId = (0).toString(); // 0000 by default
@@ -37,8 +36,6 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
 
   const currentSemesterCode = payload.code; // 03
   const currentYear = payload.year; // 2030
-
-  // I have watched the video of Module 13-2 till 5:12 mins
 
   if (
     lastStudentId &&
@@ -52,5 +49,41 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
 
   incrementId = `${payload.year}${payload.code}${incrementId}`;
 
+  return incrementId;
+};
+
+export const findLastFacultyId = async () => {
+  const lastFaculty = await User.findOne(
+    {
+      role: 'faculty',
+    },
+    {
+      id: 1,
+      _id: 0,
+    },
+  )
+    .sort({
+      createdAt: -1,
+    })
+    .lean();
+
+  console.log('lastFaculty in user.utils', lastFaculty);
+
+  return lastFaculty?.id ? lastFaculty.id.substring(2) : undefined;
+};
+
+// Generate Faculty Id
+export const generateFacultyId = async () => {
+  // Generated Id will be 0000 for the first student
+  let currentId = (0).toString();
+
+  const lastFacultyId = await findLastFacultyId(); // 0001
+
+  if (lastFacultyId) {
+    currentId = lastFacultyId; // 0001
+  }
+
+  let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
+  incrementId = `F-${incrementId}`;
   return incrementId;
 };
