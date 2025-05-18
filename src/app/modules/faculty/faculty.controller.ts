@@ -4,7 +4,7 @@ import { FacultyService } from './faculty.service';
 import sendResponse from '../../utils/sendResponse';
 
 const getAllFaculties: RequestHandler = catchAsync(async (req, res) => {
-  const result = await FacultyService.getAllFacultiesFromDB();
+  const result = await FacultyService.getAllFacultiesFromDB(req.query);
 
   sendResponse(res, {
     statusCode: 200,
