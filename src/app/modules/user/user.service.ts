@@ -102,22 +102,43 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
     );
   }
 
-  // Automatically generate id from the server
-  userData.id = await generateFacultyId();
-  console.log('userData.id in user.service', userData.id);
+  const session = await mongoose.startSession();
 
-  // Create a user
-  const newUser = await User.create(userData);
-  console.log('newUser in user.service', newUser);
+  try {
+    session.startTransaction();
 
-  // Set id as an embedded field and _id as a user (referenced field)
-  payload.id = newUser.id;
-  payload.user = newUser._id; // reference _id
+    // Automatically generate id from the server
+    userData.id = await generateFacultyId();
 
-  // Create a faculty
-  const newFaculty = await Faculty.create(payload);
-  console.log('newFaculty in user.service', newFaculty);
-  return newFaculty;
+    // Create a user (Transaction-1)
+    const newUser = await User.create([userData], { session });
+    // console.log('newUser in user.service', newUser);
+
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user.');
+    }
+
+    // Set id as an embedded field and _id as a user (referenced field)
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id; // reference _id
+
+    // Create a faculty (Transaction-2)
+    const newFaculty = await Faculty.create([payload], { session });
+    // console.log('newFaculty in user.service', newFaculty);
+
+    if (!newFaculty.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create faculty.');
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return newFaculty;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
 };
 
 export const UserServices = {
