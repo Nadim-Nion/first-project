@@ -42,7 +42,7 @@ const facultySchema = new Schema<TFaculty>(
       },
       required: true,
     },
-    dateOfBirth: { type: Date },
+    dateOfBirth: { type: String },
     email: {
       type: String,
       required: [true, 'Email is required'],

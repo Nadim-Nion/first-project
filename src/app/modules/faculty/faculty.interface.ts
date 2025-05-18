@@ -24,7 +24,7 @@ export type TFaculty = {
   designation: string;
   name: TUserName;
   gender: TGender;
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
   email: string;
   contactNo: string;
   emergencyContactNo: string;

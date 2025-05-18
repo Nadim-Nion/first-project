@@ -6,7 +6,7 @@ import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
-import { findLastFacultyId, generateStudentId } from './user.utils';
+import { generateFacultyId, generateStudentId } from './user.utils';
 import httpStatus from 'http-status';
 import { TFaculty } from '../faculty/faculty.interface';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
@@ -103,7 +103,8 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   }
 
   // Automatically generate id from the server
-  userData.id = await findLastFacultyId();
+  userData.id = await generateFacultyId();
+  console.log('userData.id in user.service', userData.id);
 
   // Create a user
   const newUser = await User.create(userData);
