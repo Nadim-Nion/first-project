@@ -1,5 +1,6 @@
 import QueryBuilder from '../../builder/QueryBuilder';
 import { AdminSearchableFields } from './admin.constant';
+import { TAdmin } from './admin.interface';
 import { Admin } from './admin.model';
 
 const getAllAdminsFromDB = async (query: Record<string, unknown>) => {
@@ -19,7 +20,38 @@ const getSingleAdminFromDB = async (id: string) => {
   return result;
 };
 
+const updateAdminIntoDB = async (id: string, payload: Partial<TAdmin>) => {
+  const { name, ...remainingAdminData } = payload;
+
+  /* 
+  {
+  name: {
+  firstName: 'Nion'
+  }
+  }
+
+  {
+  name.firstName: 'Nion'
+  }
+  */
+
+  const modifiedAdminData: Record<string, unknown> = { ...remainingAdminData };
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedAdminData[`name.${key}`] = value;
+    }
+  }
+
+  const result = await Admin.findByIdAndUpdate(id, modifiedAdminData, {
+    new: true,
+    runValidators: true,
+  });
+  return result;
+};
+
 export const AdminServices = {
   getAllAdminsFromDB,
   getSingleAdminFromDB,
+  updateAdminIntoDB,
 };

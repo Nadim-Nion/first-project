@@ -26,7 +26,21 @@ const getSingleAdmin = catchAsync(async (req, res) => {
   });
 });
 
+const updateAdmin = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { admin: adminData } = req.body;
+  const result = await AdminServices.updateAdminIntoDB(id, adminData);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Admin is updated successfully',
+    data: result,
+  });
+});
+
 export const AdminControllers = {
   getAllAdmins,
   getSingleAdmin,
+  updateAdmin,
 };
