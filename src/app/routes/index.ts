@@ -38,6 +38,10 @@ const moduleRoutes = [
     path: '/faculties',
     route: FacultyRoutes,
   },
+  {
+    path: '/admins',
+    route: FacultyRoutes,
+  },
 ];
 
 /* router.use('/users', UserRoutes);

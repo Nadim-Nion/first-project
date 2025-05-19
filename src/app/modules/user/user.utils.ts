@@ -5,6 +5,7 @@ import { User } from './user.model';
 // For example: 2030 03 0001
 // 203003  0001
 
+// Find Last Student ID
 const findLastStudentId = async () => {
   const lastStudent = await User.findOne(
     {
@@ -52,6 +53,7 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
   return incrementId;
 };
 
+// Find Last Faculty ID
 export const findLastFacultyId = async () => {
   const lastFaculty = await User.findOne(
     {
@@ -67,7 +69,7 @@ export const findLastFacultyId = async () => {
     })
     .lean();
 
-  console.log('lastFaculty in user.utils', lastFaculty);
+  console.log('lastFaculty in user.utils:', lastFaculty);
 
   return lastFaculty?.id ? lastFaculty.id.substring(2) : undefined;
 };
@@ -85,5 +87,41 @@ export const generateFacultyId = async () => {
 
   let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
   incrementId = `F-${incrementId}`;
+  return incrementId;
+};
+
+// Find Last Admin Id
+export const findLastAdminId = async () => {
+  const lastAdmin = await User.findOne(
+    {
+      role: 'admin',
+    },
+    {
+      _id: 0,
+      id: 1,
+    },
+  )
+    .sort({
+      createdAt: -1,
+    })
+    .lean();
+
+  // console.log('lastAdmin in user.utils:', lastAdmin);
+
+  return lastAdmin?.id ? lastAdmin.id.substring(2) : undefined;
+};
+
+// Generate Admin ID
+export const generateAdminId = async () => {
+  // Generated Id will be 0000 for the first student
+  let currentId = (0).toString();
+
+  const lastAdminId = await findLastAdminId(); // 0001
+  if (lastAdminId) {
+    currentId = lastAdminId; // 0001
+  }
+
+  let incrementId = (Number(currentId) + 1).toString().padStart(4, '0');
+  incrementId = `A-${incrementId}`;
   return incrementId;
 };
