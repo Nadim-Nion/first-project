@@ -74,24 +74,25 @@ const adminSchema = new Schema<TAdmin, AdminModel>(
         values: BloodGroup,
         message: `{VALUE} is not a valid blood group`,
       },
-      presentAddress: {
-        type: String,
-        required: [true, 'Present address is required'],
-      },
-      permanentAddress: {
-        type: String,
-        required: [true, 'Permanent address is required'],
-      },
-      profileImg: {
-        type: String,
-      },
-      isDeleted: {
-        type: Boolean,
-        default: false,
-      },
+    },
+    presentAddress: {
+      type: String,
+      required: [true, 'Present address is required'],
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, 'Permanent address is required'],
+    },
+    profileImg: {
+      type: String,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
+    timestamps: true,
     toJSON: {
       virtuals: true,
     },
