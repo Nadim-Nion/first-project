@@ -1,3 +1,4 @@
+import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
 import { TSemesterRegistration } from './semesterRegistration.interface';
@@ -32,6 +33,30 @@ const createSemesterRegistrationIntoDB = async (
   return result;
 };
 
+const getAllSemesterRegistrationsFromDB = async (
+  query: Record<string, unknown>,
+) => {
+  const semesterRegistrationQuery = new QueryBuilder(
+    SemesterRegistration.find().populate('academicSemester'),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fieldLimiting();
+
+  const result = await semesterRegistrationQuery.modelQuery;
+  return result;
+};
+
+const getSingleSemesterRegistrationFromDB = async (id: string) => {
+  const result =
+    await SemesterRegistration.findById(id).populate('academicSemester');
+  return result;
+};
+
 export const SemesterRegistrationServices = {
   createSemesterRegistrationIntoDB,
+  getAllSemesterRegistrationsFromDB,
+  getSingleSemesterRegistrationFromDB,
 };

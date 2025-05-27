@@ -11,11 +11,41 @@ const createSemesterRegistration = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Semester registration created successfully',
+    message: 'Semester registration is created successfully',
+    data: result,
+  });
+});
+
+const getAllSemesterRegistrations = catchAsync(async (req, res) => {
+  const result =
+    await SemesterRegistrationServices.getAllSemesterRegistrationsFromDB(
+      req.query,
+    );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'All Semester registrations are retrieved successfully',
+    data: result,
+  });
+});
+
+const getSingleSemesterRegistration = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result =
+    await SemesterRegistrationServices.getSingleSemesterRegistrationFromDB(id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Semester registration is retrieved successfully',
     data: result,
   });
 });
 
 export const SemesterRegistrationControllers = {
   createSemesterRegistration,
+  getAllSemesterRegistrations,
+  getSingleSemesterRegistration,
 };
