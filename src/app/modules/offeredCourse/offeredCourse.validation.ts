@@ -43,6 +43,7 @@ const createOfferedCourseValidationSchema = z.object({
       },
       {
         message: 'End time must be greater than start time',
+        path: ['endTime'],
       },
     ),
 });
@@ -71,6 +72,7 @@ const updateOfferedCourseValidationSchema = z.object({
       },
       {
         message: 'End time must be greater than start time',
+        path: ['endTime'],
       },
     ),
 });
