@@ -7,6 +7,7 @@ import { SemesterRegistration } from '../semesterRegistration/semesterRegistrati
 import { TOfferedCourse } from './offeredCourse.interface';
 import { OfferedCourse } from './offeredCourse.model';
 import httpStatus from 'http-status';
+import { hasTimeConflict } from './offeredCourse.utils';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -107,7 +108,7 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     faculty,
     days: { $in: days },
   }).select('days startTime endTime');
-  console.log('assignedSchedule in offeredCourse.service:', assignedSchedule);
+  // console.log('assignedSchedule in offeredCourse.service:', assignedSchedule);
 
   const newSchedule = {
     days,
@@ -115,34 +116,15 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     endTime,
   };
 
-  assignedSchedule.forEach((schedule) => {
-    const existingStartTime = new Date(`1970-01-01T${schedule.startTime}:00`);
-    const existingEndTime = new Date(`1970-01-01T${schedule.endTime}:00`);
-    const newStartTime = new Date(`1970-01-01T${newSchedule.startTime}:00`);
-    const newEndTime = new Date(`1970-01-01T${newSchedule.endTime}:00`);
+  if (hasTimeConflict(assignedSchedule, newSchedule)) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      `Faculty ${isFacultyExists.name.firstName} ${isFacultyExists.name.middleName} ${isFacultyExists.name.lastName} is not available at ${days.join(', ')} from ${startTime} to ${endTime}`,
+    );
+  }
 
-    /* 
-    Handle time conflict:
-    If the new schedule starts before the existing schedule ends and ends after the existing schedule starts, then there is a conflict.
-
-    Old Schedule: 10:00 - 12:00
-    New Schedule: 11:00 - 1:00
-
-    When there is no conflict:
-    Old Schedule: 10:00 - 12:00 
-    New Schedule: 12:00 - 2:00
-    */
-
-    if(newStartTime < existingEndTime && newEndTime > existingStartTime) {
-      throw new AppError(
-        httpStatus.CONFLICT,
-        `Faculty ${isFacultyExists.name} is not available at ${days.join(', ')} from ${startTime} to ${endTime}`,
-      );
-    }
-  })
-
-    const result = await OfferedCourse.create({ ...payload, academicSemester });
-    return result;
+  const result = await OfferedCourse.create({ ...payload, academicSemester });
+  return result;
   // return null;
 };
 
