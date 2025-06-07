@@ -1,7 +1,52 @@
+import AppError from '../../errors/AppError';
+import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
+import httpStatus from 'http-status';
+import bcrypt from 'bcrypt';
 
 const loginUser = async (payload: TLoginUser) => {
-  console.log('Login user service called with payload:', payload);
+  // check the user is exist or not
+  const isUserExists = await User.findOne({
+    id: payload.id,
+  });
+  // console.log('isUserExists in auth.service.ts', isUserExists);
+
+  if (!isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Check the user is deleted or not
+  const isUserDeleted = isUserExists?.isDeleted;
+
+  if (isUserDeleted) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User is deleted, please contact with admin',
+    );
+  }
+
+  // Check the user is blocked or not
+  const userStatus = isUserExists?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User is blocked, please contact with admin',
+    );
+  }
+
+  // Check the password is correct or not
+  const isPasswordMatched = await bcrypt.compare(
+    payload?.password,
+    isUserExists?.password,
+  );
+  console.log('isPasswordMatched in auth.service.ts', isPasswordMatched);
+
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
+  }
+
+  // Access Granted: send access and refresh token
 };
 
 export const AuthServices = {
