@@ -2,21 +2,17 @@ import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
 import httpStatus from 'http-status';
-import bcrypt from 'bcrypt';
 
 const loginUser = async (payload: TLoginUser) => {
   // check the user is exist or not
-  const isUserExists = await User.findOne({
-    id: payload.id,
-  });
-  // console.log('isUserExists in auth.service.ts', isUserExists);
+  const user = await User.isUserExistsByCustomId(payload.id);
 
-  if (!isUserExists) {
+  if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
   // Check the user is deleted or not
-  const isUserDeleted = isUserExists?.isDeleted;
+  const isUserDeleted = user?.isDeleted;
 
   if (isUserDeleted) {
     throw new AppError(
@@ -26,7 +22,7 @@ const loginUser = async (payload: TLoginUser) => {
   }
 
   // Check the user is blocked or not
-  const userStatus = isUserExists?.status;
+  const userStatus = user?.status;
 
   if (userStatus === 'blocked') {
     throw new AppError(
@@ -36,13 +32,7 @@ const loginUser = async (payload: TLoginUser) => {
   }
 
   // Check the password is correct or not
-  const isPasswordMatched = await bcrypt.compare(
-    payload?.password,
-    isUserExists?.password,
-  );
-  console.log('isPasswordMatched in auth.service.ts', isPasswordMatched);
-
-  if (!isPasswordMatched) {
+  if (!(await User.isPasswordMatched(payload?.password, user?.password))) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
   }
 
@@ -52,3 +42,46 @@ const loginUser = async (payload: TLoginUser) => {
 export const AuthServices = {
   loginUser,
 };
+
+/* 
+
+// Step-1: Check the user is exists or not
+const isUserExists = await User.findOne({
+    id: payload.id,
+  });
+
+  if (!isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Step-2: Check the user is deleted or not
+  const isUserDeleted = isUserExists?.isDeleted;
+
+  if (isUserDeleted) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User is deleted, please contact with admin',
+    );
+  }
+
+  //  Step-3: Check the user is blocked or not
+  const userStatus = isUserExists?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User is blocked, please contact with admin',
+    );
+  }
+
+  // Step-4: Check the password is correct or not
+  const isPasswordMatched = await bcrypt.compare(
+    payload?.password,
+    isUserExists?.password,
+  );
+
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
+  }
+
+*/
