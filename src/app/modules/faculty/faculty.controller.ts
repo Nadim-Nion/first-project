@@ -6,7 +6,7 @@ import httpStatus from 'http-status';
 
 const getAllFaculties: RequestHandler = catchAsync(async (req, res) => {
   const result = await FacultyService.getAllFacultiesFromDB(req.query);
-  console.log('req.user:', req.user);
+  
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

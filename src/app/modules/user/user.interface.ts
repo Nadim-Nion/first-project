@@ -10,6 +10,7 @@
  */
 
 import { Model } from 'mongoose';
+import { UserRole } from './user.constant';
 
 export interface TUser {
   id: string;
@@ -27,3 +28,5 @@ export interface UserModelType extends Model<TUser> {
     hashedPassword: string,
   ): Promise<boolean>;
 }
+
+export type TUserRole = keyof typeof UserRole;
