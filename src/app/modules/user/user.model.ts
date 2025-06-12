@@ -71,4 +71,13 @@ userSchema.statics.isPasswordMatched = async function (
   return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
 
+// Check the password was changed after the JWT was issued (token should be invalidated)
+userSchema.statics.isJWTIssuedBeforePasswordChange = function (
+  passwordChangeTimestamp: Date,
+  jwtIssuedTimestamp: number,
+) {
+  console.log('passwordChangeTimestamp:', passwordChangeTimestamp);
+  console.log('jwtIssuedTimestamp:', jwtIssuedTimestamp);
+};
+
 export const User = model<TUser, UserModelType>('User', userSchema);
