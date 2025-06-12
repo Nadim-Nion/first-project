@@ -3,7 +3,8 @@ import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
 import httpStatus from 'http-status';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 const loginUser = async (payload: TLoginUser) => {
   // check the user is exist or not
@@ -54,16 +55,62 @@ const loginUser = async (payload: TLoginUser) => {
 };
 
 const changePassword = async (
-  user: {
-    userId: string;
-    role: string;
-  },
-  payload,
+  userData: JwtPayload,
+  payload: { oldPassword: string; newPassword: string },
 ) => {
-  const result = await User.findOneAndUpdate({
-    id: user.userId,
-    role: user.role,
-  });
+  // check the user is exist or not
+  const user = await User.isUserExistsByCustomId(userData.userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Check the user is deleted or not
+  const isUserDeleted = user?.isDeleted;
+
+  if (isUserDeleted) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User is deleted, please contact with admin',
+    );
+  }
+
+  // Check the user is blocked or not
+  const userStatus = user?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User is blocked, please contact with admin',
+    );
+  }
+
+  // Check the password is correct or not
+  if (!(await User.isPasswordMatched(payload?.oldPassword, user?.password))) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
+  }
+
+  // Hash the new password before storing to the DB
+  const newHashedPassword = await bcrypt.hash(
+    payload?.newPassword,
+    Number(config.bcrypt_salt_round),
+  );
+
+  const result = await User.findOneAndUpdate(
+    {
+      id: userData.userId,
+      role: userData.role,
+    },
+    {
+      password: newHashedPassword,
+      needsPasswordChange: false,
+      passwordChangeAt: new Date(),
+    },
+    {
+      new: true,
+    },
+  );
+  return result;
 };
 
 export const AuthServices = {
