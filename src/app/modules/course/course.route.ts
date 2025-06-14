@@ -37,11 +37,10 @@ router.put(
 
 router.delete(
   '/:courseId/remove-faculties',
-  auth(UserRole.admin),
   validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
   CourseControllers.removeFacultiesWithCourse,
 );
 
-router.delete('/:id', CourseControllers.deleteCourse);
+router.delete('/:id', auth(UserRole.admin), CourseControllers.deleteCourse);
 
 export const CourseRoutes = router;
