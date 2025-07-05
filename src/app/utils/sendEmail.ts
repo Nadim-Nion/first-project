@@ -1,21 +1,22 @@
 import nodemailer from 'nodemailer';
+import config from '../config';
 
-export const sendEmail = async () => {
+export const sendEmail = async (to: string, html: string) => {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
+    host: 'smtp.gmail.com',
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: config.node_env === 'production',
     auth: {
-      user: 'maddison53@ethereal.email',
-      pass: 'jn7jnAPss4f63QBp6D',
+      user: `${config.email_user}`,
+      pass: `${config.email_pass}`,
     },
   });
 
   await transporter.sendMail({
-    from: '"Maddison Foo Koch" <maddison53@ethereal.email>',
-    to: 'bar@example.com, baz@example.com',
-    subject: 'Hello ✔',
-    text: 'Hello world?', // plain‑text body
-    html: '<b>Hello world?</b>', // HTML body
+    from: `${config.email_user}`,
+    to,
+    subject: 'Special Notice from PH University',
+    text: 'Reset your PH University Password within 10 mins', // plain‑text body
+    html, // HTML body
   });
 };
