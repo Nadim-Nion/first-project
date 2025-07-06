@@ -238,11 +238,46 @@ const forgetPassword = async (userId: string) => {
   sendEmail(user.email, resetUILink);
 };
 
+const resetPassword = async (
+  id: string,
+  newPassword: string,
+  token: string,
+) => {
+  // check the user is exist or not
+  const user = await User.isUserExistsByCustomId(id);
+  // console.log('user:', user);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Check the user is deleted or not
+  const isUserDeleted = user?.isDeleted;
+
+  if (isUserDeleted) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User is deleted, please contact with admin',
+    );
+  }
+
+  // Check the user is blocked or not
+  const userStatus = user?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'User is blocked, please contact with admin',
+    );
+  }
+};
+
 export const AuthServices = {
   loginUser,
   changePassword,
   refreshToken,
   forgetPassword,
+  resetPassword,
 };
 
 /* 
