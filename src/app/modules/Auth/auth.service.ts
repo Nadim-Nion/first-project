@@ -3,9 +3,9 @@ import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
 import httpStatus from 'http-status';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { createToken } from './auth.utils';
+import { createToken, verifyToken } from './auth.utils';
 import { sendEmail } from '../../utils/sendEmail';
 
 const loginUser = async (payload: TLoginUser) => {
@@ -133,10 +133,7 @@ const refreshToken = async (token: string) => {
   }
 
   // Check whether the token is valid or not
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
 
   // Check whether the user has the permission to access the resource
   const { userId, iat } = decoded;
@@ -271,10 +268,7 @@ const resetPassword = async (
   }
 
   // Check whether the token is valid or not
-  const decoded = jwt.verify(
-    token,
-    config.jwt_access_secret as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_access_secret as string);
 
   if (id !== decoded?.userId) {
     throw new AppError(httpStatus.FORBIDDEN, ' Yor are forbidden');

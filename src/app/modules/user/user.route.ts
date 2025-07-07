@@ -29,4 +29,6 @@ router.post(
   UserControllers.createAdmin,
 );
 
+router.get('/me', auth(UserRole.student, UserRole.admin, UserRole.faculty), UserControllers.getMe);
+
 export const UserRoutes = router;
