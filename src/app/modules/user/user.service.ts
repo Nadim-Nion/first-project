@@ -224,9 +224,24 @@ const getMe = async (userId: string, role: string) => {
   return result;
 };
 
+const changeStatus = async (
+  payload: {
+    status: string;
+  },
+  id: string,
+) => {
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
   getMe,
+  changeStatus,
 };
