@@ -6,6 +6,7 @@ import catchAsync from '../../utils/catchAsync';
 
 const createStudent: RequestHandler = catchAsync(async (req, res) => {
   console.log('req.file:', req.file);
+  console.log('req.body:', req.body);
 
   // const student = req.body.student;
   const { password, student: studentData } = req.body;
@@ -39,7 +40,7 @@ const createStudent: RequestHandler = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Student is created successfully',
-    data: result,
+    data: null,
   });
 });
 
