@@ -5,8 +5,7 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 
 const createStudent: RequestHandler = catchAsync(async (req, res) => {
-  console.log('req.file:', req.file);
-  console.log('req.body:', req.body);
+  const file = req.file;
 
   // const student = req.body.student;
   const { password, student: studentData } = req.body;
@@ -19,7 +18,11 @@ const createStudent: RequestHandler = catchAsync(async (req, res) => {
   // const zodParsedData = studentValidationSchema.parse(studentData);
 
   // will call service function to send this data
-  const result = await UserServices.createStudentIntoDB(password, studentData);
+  const result = await UserServices.createStudentIntoDB(
+    file,
+    password,
+    studentData,
+  );
 
   /* if (error) {
     res.status(500).json({
@@ -40,7 +43,7 @@ const createStudent: RequestHandler = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Student is created successfully',
-    data: null,
+    data: result,
   });
 });
 

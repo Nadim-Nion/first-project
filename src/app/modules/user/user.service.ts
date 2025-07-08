@@ -19,7 +19,11 @@ import { TAdmin } from '../admin/admin.interface';
 import { Admin } from '../admin/admin.model';
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
-const createStudentIntoDB = async (password: string, payload: TStudent) => {
+const createStudentIntoDB = async (
+  file: unknown,
+  password: string,
+  payload: TStudent,
+) => {
   // create a user object
   const userData: Partial<TUser> = {};
 
@@ -58,8 +62,11 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   try {
     session.startTransaction();
 
+    const imageName = `${userData.id}-${payload?.name?.firstName}`;
+    const path = (file as Express.Multer.File)?.path;
+
     // Send image to cloudinary
-    sendImageToCloudinary();
+    const { secure_url } = await sendImageToCloudinary(path, imageName);
 
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
@@ -72,6 +79,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     // set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
+    payload.profileImg = secure_url;
 
     const newStudent = await Student.create([payload], { session });
     // console.log('newStudent', newStudent);
