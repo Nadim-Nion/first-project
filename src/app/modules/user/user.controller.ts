@@ -5,6 +5,8 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 
 const createStudent: RequestHandler = catchAsync(async (req, res) => {
+  console.log('req.file:', req.file);
+
   // const student = req.body.student;
   const { password, student: studentData } = req.body;
   // console.log(req.body);
