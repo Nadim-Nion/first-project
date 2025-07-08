@@ -101,7 +101,11 @@ const createStudentIntoDB = async (
   // return newUser;
 };
 
-const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+const createFacultyIntoDB = async (
+  file: unknown,
+  password: string,
+  payload: TFaculty,
+) => {
   // create a user object
   const userData: Partial<TUser> = {};
 
@@ -134,6 +138,12 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
     // Automatically generate id from the server
     userData.id = await generateFacultyId();
 
+    const imageName = `${userData.id}-${payload?.name?.firstName}`;
+    const path = (file as Express.Multer.File)?.path;
+
+    // Send image to cloudinary
+    const { secure_url } = await sendImageToCloudinary(path, imageName);
+
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
     // console.log('newUser in user.service', newUser);
@@ -145,6 +155,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
     // Set id as an embedded field and _id as a user (referenced field)
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
+    payload.profileImage = secure_url;
 
     // Create a faculty (Transaction-2)
     const newFaculty = await Faculty.create([payload], { session });
@@ -165,7 +176,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   }
 };
 
-const createAdminIntoDB = async (password: string, payload: TAdmin) => {
+const createAdminIntoDB = async (file: unknown, password: string, payload: TAdmin) => {
   // Create a User Object
   const userData: Partial<TUser> = {};
 
@@ -186,6 +197,12 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     // Automatically generate id from the server
     userData.id = await generateAdminId();
 
+    const imageName = `${userData.id}-${payload?.name?.firstName}`;
+    const path = (file as Express.Multer.File)?.path;
+
+    // Send image to cloudinary
+    const { secure_url } = await sendImageToCloudinary(path, imageName);
+
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
     // console.log('newUser in user.service:', newUser);
@@ -197,6 +214,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     // Set id as an embedded field and _id as a user (referenced field)
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
+    payload.profileImg = secure_url;
 
     // Create a admin (Transaction-2)
     const newAdmin = await Admin.create([payload], { session });
