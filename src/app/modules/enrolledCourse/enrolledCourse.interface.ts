@@ -10,8 +10,9 @@ export type TCourseMarks = {
 export type TGrade = 'A' | 'B' | 'C' | 'D' | 'F' | 'NA';
 
 export type TEnrolledCourse = {
-  semesterRegister: Types.ObjectId;
+  semesterRegistration: Types.ObjectId;
   academicSemester: Types.ObjectId;
+  academicFaculty: Types.ObjectId;
   academicDepartment: Types.ObjectId;
   offeredCourse: Types.ObjectId;
   course: Types.ObjectId;
