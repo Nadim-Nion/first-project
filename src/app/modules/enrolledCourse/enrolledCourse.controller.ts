@@ -4,7 +4,12 @@ import { EnrolledCourseServices } from './enrolledCourse.service';
 import httpStatus from 'http-status';
 
 const createEnrolledCourse = catchAsync(async (req, res) => {
-  const result = await EnrolledCourseServices.createEnrolledCourseIntoDB();
+  const { userId } = req.user;
+
+  const result = await EnrolledCourseServices.createEnrolledCourseIntoDB(
+    userId,
+    req.body,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
