@@ -4,6 +4,7 @@ import { TEnrolledCourse } from './enrolledCourse.interface';
 import httpStatus from 'http-status';
 import { EnrolledCourse } from './enrolledCourse.model';
 import { Student } from '../student/student.model';
+import mongoose from 'mongoose';
 
 const createEnrolledCourseIntoDB = async (
   userId: string,
@@ -18,21 +19,12 @@ const createEnrolledCourseIntoDB = async (
   // Step-1
   const { offeredCourse } = payload;
   const isOfferedCourseExists = await OfferedCourse.findById(offeredCourse);
-  console.log('isOfferedCourseExists:', isOfferedCourseExists);
 
   if (!isOfferedCourseExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Offered Course is not found');
   }
 
-  // Check the current number of enrolled students
-  const enrolledCount = await EnrolledCourse.countDocuments({ offeredCourse });
-  console.log('Currently enrolled:', enrolledCount);
-  console.log('Max capacity:', isOfferedCourseExists.maxCapacity);
-
-  if (
-    isOfferedCourseExists.maxCapacity <= 0 &&
-    enrolledCount > isOfferedCourseExists.maxCapacity
-  ) {
+  if (isOfferedCourseExists.maxCapacity <= 0) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       'Course enrollment capacity reached',
@@ -41,7 +33,6 @@ const createEnrolledCourseIntoDB = async (
 
   // Step-2
   const isStudentExists = await Student.findOne({ id: userId });
-  console.log('isStudentExists:', isStudentExists);
 
   if (!isStudentExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Student is not found');
@@ -52,10 +43,63 @@ const createEnrolledCourseIntoDB = async (
     offeredCourse,
     student: isStudentExists._id,
   });
-  console.log('isStudentAlreadyEnrolled:', isStudentAlreadyEnrolled);
 
   if (isStudentAlreadyEnrolled) {
     throw new AppError(httpStatus.CONFLICT, 'Student is already existed');
+  }
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    // Transaction-1
+    const result = await EnrolledCourse.create(
+      [
+        {
+          semesterRegistration: isOfferedCourseExists.semesterRegistration,
+          academicSemester: isOfferedCourseExists.academicSemester,
+          academicFaculty: isOfferedCourseExists.academicFaculty,
+          academicDepartment: isOfferedCourseExists.academicDepartment,
+          offeredCourse: offeredCourse,
+          course: isOfferedCourseExists.course,
+          student: isStudentExists._id,
+          faculty: isOfferedCourseExists.faculty,
+          isEnrolled: true,
+        },
+      ],
+      { session },
+    );
+
+    if (!result) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Failed to enroll in this course',
+      );
+    }
+
+    const maxCapacity = isOfferedCourseExists.maxCapacity;
+
+    // Transaction-2
+    await OfferedCourse.findByIdAndUpdate(
+      offeredCourse,
+      {
+        maxCapacity: maxCapacity - 1,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
   }
 };
 
