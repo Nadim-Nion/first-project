@@ -21,7 +21,7 @@ app.use(
 app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
+  res.send('Hello Programming Hero UNiversity!');
 });
 
 // Not Found Route

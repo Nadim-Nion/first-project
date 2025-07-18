@@ -12,7 +12,7 @@ async function main() {
     await mongoose.connect(config.database_url as string);
 
     server = app.listen(config.port, () => {
-      console.log(`😊 My first project listening on port ${config.port}`);
+      console.log(`My first project listening on port ${config.port} 😊`);
     });
   } catch (err) {
     console.log(err);
@@ -22,7 +22,7 @@ async function main() {
 main();
 
 process.on('unhandledRejection', () => {
-  console.log('😈 Unhandled Rejection is detected. Server is Shutting down...');
+  console.log('Unhandled Rejection is detected. Server is Shutting down... 😈');
 
   if (server) {
     server.close(() => {
@@ -34,7 +34,7 @@ process.on('unhandledRejection', () => {
 });
 
 process.on('uncaughtException', () => {
-  console.log('😈 Uncaught Exception is detected. Server is Shutting down...');
+  console.log('Uncaught Exception is detected. Server is Shutting down... 😈');
 
   process.exit(1);
 });
