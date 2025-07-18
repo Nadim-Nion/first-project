@@ -45,9 +45,9 @@ const createEnrolledCourseIntoDB = async (
     student: isStudentExists._id,
   });
 
-  if (isStudentAlreadyEnrolled) {
-    throw new AppError(httpStatus.CONFLICT, 'Student is already enrolled');
-  }
+  // if (isStudentAlreadyEnrolled) {
+  //   throw new AppError(httpStatus.CONFLICT, 'Student is already enrolled');
+  // }
 
   // Check total credits exceed maxCredits
   const semesterRegistration = await SemesterRegistration.findById(
@@ -69,9 +69,33 @@ const createEnrolledCourseIntoDB = async (
         student: isStudentExists._id,
       },
     },
+    {
+      $lookup: {
+        from: 'courses',
+        localField: 'course',
+        foreignField: '_id',
+        as: 'enrolledCourseData',
+      },
+    },
+    {
+      $unwind: '$enrolledCourseData',
+    },
+    {
+      $group: {
+        _id: null,
+        totalEnrolledCredits: { $sum: '$enrolledCourseData.credits' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+      },
+    },
   ]);
 
   console.log('enrolledCourses:', enrolledCourses);
+
+  const totalCredits = enrolledCourses.length > 0 ? enrolledCourses.map(enrolledCourse => enrolledCourse.totalEnrolledCredits)
 
   // const session = await mongoose.startSession();
 
