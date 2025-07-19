@@ -38,7 +38,8 @@ class QueryBuilder<T> {
   }
 
   sort() {
-    const sort = (this.query.sort as string)?.split(',')?.join(' ') || '-createdAt';
+    const sort =
+      (this.query.sort as string)?.split(',')?.join(' ') || '-createdAt';
 
     this.modelQuery = this.modelQuery.sort(sort as string);
 
@@ -62,6 +63,23 @@ class QueryBuilder<T> {
     this.modelQuery = this.modelQuery.select(fields);
 
     return this;
+  }
+
+  async countTotal() {
+    const filter = this.modelQuery.getFilter();
+    const totalDoc = await this.modelQuery.model.countDocuments(filter);
+
+    const page = Number(this?.query?.page) || 1;
+    const limit = Number(this?.query?.limit) || 10;
+
+    const totalPage = Math.ceil(totalDoc / limit);
+
+    return {
+      page,
+      limit,
+      totalDoc,
+      totalPage,
+    };
   }
 }
 
