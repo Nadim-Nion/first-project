@@ -220,15 +220,23 @@ const updateEnrolledCourseMarksIntoDB = async (
     ...courseMarks,
   };
 
-  console.log('modifiedData:', modifiedData);
+  if (courseMarks?.finalTerm) {
+    const { classTest1, midterm, classTest2, finalTerm } = courseMarks;
+
+    const totalMarks = classTest1 + midterm + classTest2 + finalTerm;
+    // Math.ceil(classTest1 * 0.1) +
+    // Math.ceil(midterm * 0.3) +
+    // Math.ceil(classTest2 * 0.1) +
+    // Math.ceil(finalTerm * 0.5);
+
+    console.log('totalMarks:', totalMarks);
+  }
 
   if (courseMarks && Object.keys(courseMarks).length > 0) {
     for (const [key, value] of Object.entries(courseMarks)) {
       modifiedData[`courseMarks.${key}`] = value;
     }
   }
-
-  console.log('updated modifiedData:', modifiedData);
 
   const result = await EnrolledCourse.findByIdAndUpdate(
     isCourseBelongToFaculty._id,
