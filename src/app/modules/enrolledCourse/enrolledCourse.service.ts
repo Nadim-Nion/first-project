@@ -7,6 +7,7 @@ import { Student } from '../student/student.model';
 import mongoose from 'mongoose';
 import { SemesterRegistration } from '../semesterRegistration/semesterRegistration.model';
 import { Course } from '../course/course.model';
+import { Faculty } from '../faculty/faculty.model';
 
 const createEnrolledCourseIntoDB = async (
   userId: string,
@@ -193,6 +194,52 @@ const updateEnrolledCourseMarksIntoDB = async (
   if (!isStudentExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Student is not found');
   }
+
+  const isFacultyExists = await Faculty.findOne({ id: facultyId });
+
+  if (!isFacultyExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Faculty is not found');
+  }
+
+  const isCourseBelongToFaculty = await EnrolledCourse.findOne({
+    semesterRegistration,
+    offeredCourse,
+    student,
+    faculty: isFacultyExists._id,
+  });
+
+  if (!isCourseBelongToFaculty) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'Course is not belong to the Faculty',
+    );
+  }
+
+  // Dynamically update the course marks
+  const modifiedData: Record<string, unknown> = {
+    ...courseMarks,
+  };
+
+  console.log('modifiedData:', modifiedData);
+
+  if (courseMarks && Object.keys(courseMarks).length > 0) {
+    for (const [key, value] of Object.entries(courseMarks)) {
+      modifiedData[`courseMarks.${key}`] = value;
+    }
+  }
+
+  console.log('updated modifiedData:', modifiedData);
+
+  const result = await EnrolledCourse.findByIdAndUpdate(
+    isCourseBelongToFaculty._id,
+    modifiedData,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  return result;
 };
 
 export const EnrolledCourseServices = {
