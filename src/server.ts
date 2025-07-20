@@ -4,12 +4,15 @@ import mongoose from 'mongoose';
 // const mongoose = require('mongoose');
 // const port = 5000;
 import { Server } from 'http';
+import seedSuperAdmin from './app/db';
 
 let server: Server;
 
 async function main() {
   try {
     await mongoose.connect(config.database_url as string);
+
+    seedSuperAdmin();
 
     server = app.listen(config.port, () => {
       console.log(`My first project listening on port ${config.port} 😊`);
