@@ -13,7 +13,7 @@ const router = express.Router();
 // will call controller function
 router.post(
   '/create-student',
-  auth(UserRole.admin),
+  auth(UserRole.superAdmin, UserRole.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -25,7 +25,7 @@ router.post(
 
 router.post(
   '/create-faculty',
-  auth(UserRole.admin),
+  auth(UserRole.superAdmin, UserRole.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -37,6 +37,7 @@ router.post(
 
 router.post(
   '/create-admin',
+  auth(UserRole.superAdmin, UserRole.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -48,7 +49,7 @@ router.post(
 
 router.get(
   '/me',
-  auth(UserRole.student, UserRole.admin, UserRole.faculty),
+  auth(UserRole.superAdmin, UserRole.student, UserRole.admin, UserRole.faculty),
   UserControllers.getMe,
 );
 

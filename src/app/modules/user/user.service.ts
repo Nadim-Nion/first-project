@@ -57,16 +57,35 @@ const createStudentIntoDB = async (
     );
   }
 
+  // Find Academic Department info
+  const academicDepartment = await AcademicDepartment.findById(
+    payload.academicDepartment,
+  );
+  if (!academicDepartment) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Academic department is not found',
+    );
+  }
+
+  // Set Academic Faculty from Academic Department document
+  payload.academicFaculty = academicDepartment.academicFaculty;
+
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
-    const imageName = `${userData.id}-${payload?.name?.firstName}`;
-    const path = (file as Express.Multer.File)?.path;
+    if (file) {
+      const imageName = `${userData.id}-${payload?.name?.firstName}`;
+      const path = (file as Express.Multer.File)?.path;
 
-    // Send image to cloudinary
-    const { secure_url } = await sendImageToCloudinary(path, imageName);
+      // Send image to cloudinary
+      const { secure_url } = await sendImageToCloudinary(path, imageName);
+
+      // Set profile image URL
+      payload.profileImg = secure_url;
+    }
 
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
@@ -79,7 +98,6 @@ const createStudentIntoDB = async (
     // set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
-    payload.profileImg = secure_url;
 
     const newStudent = await Student.create([payload], { session });
     // console.log('newStudent', newStudent);
@@ -138,11 +156,16 @@ const createFacultyIntoDB = async (
     // Automatically generate id from the server
     userData.id = await generateFacultyId();
 
-    const imageName = `${userData.id}-${payload?.name?.firstName}`;
-    const path = (file as Express.Multer.File)?.path;
+    if (file) {
+      const imageName = `${userData.id}-${payload?.name?.firstName}`;
+      const path = (file as Express.Multer.File)?.path;
 
-    // Send image to cloudinary
-    const { secure_url } = await sendImageToCloudinary(path, imageName);
+      // Send image to cloudinary
+      const { secure_url } = await sendImageToCloudinary(path, imageName);
+
+      // Set profile image URL
+      payload.profileImage = secure_url;
+    }
 
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
@@ -155,7 +178,6 @@ const createFacultyIntoDB = async (
     // Set id as an embedded field and _id as a user (referenced field)
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
-    payload.profileImage = secure_url;
 
     // Create a faculty (Transaction-2)
     const newFaculty = await Faculty.create([payload], { session });
@@ -176,7 +198,11 @@ const createFacultyIntoDB = async (
   }
 };
 
-const createAdminIntoDB = async (file: unknown, password: string, payload: TAdmin) => {
+const createAdminIntoDB = async (
+  file: unknown,
+  password: string,
+  payload: TAdmin,
+) => {
   // Create a User Object
   const userData: Partial<TUser> = {};
 
@@ -197,11 +223,16 @@ const createAdminIntoDB = async (file: unknown, password: string, payload: TAdmi
     // Automatically generate id from the server
     userData.id = await generateAdminId();
 
-    const imageName = `${userData.id}-${payload?.name?.firstName}`;
-    const path = (file as Express.Multer.File)?.path;
+    if (file) {
+      const imageName = `${userData.id}-${payload?.name?.firstName}`;
+      const path = (file as Express.Multer.File)?.path;
 
-    // Send image to cloudinary
-    const { secure_url } = await sendImageToCloudinary(path, imageName);
+      // Send image to cloudinary
+      const { secure_url } = await sendImageToCloudinary(path, imageName);
+
+      // Set profile image URL
+      payload.profileImg = secure_url;
+    }
 
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
@@ -214,7 +245,6 @@ const createAdminIntoDB = async (file: unknown, password: string, payload: TAdmi
     // Set id as an embedded field and _id as a user (referenced field)
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
-    payload.profileImg = secure_url;
 
     // Create a admin (Transaction-2)
     const newAdmin = await Admin.create([payload], { session });
