@@ -148,6 +148,9 @@ const createFacultyIntoDB = async (
     );
   }
 
+  // Save academic faculty info
+  payload.academicFaculty = academicDepartment?.academicFaculty;
+
   const session = await mongoose.startSession();
 
   try {

@@ -40,7 +40,7 @@ const createFacultyValidationSchema = z.object({
       presentAddress: z.string(),
       permanentAddress: z.string(),
       academicDepartment: z.string(),
-      profileImg: z.string(),
+      // profileImage: z.string(),
     }),
   }),
 });
@@ -91,7 +91,7 @@ const updateFacultyValidationSchema = z.object({
         presentAddress: z.string().optional(),
         permanentAddress: z.string().optional(),
         academicDepartment: z.string().optional(),
-        profileImg: z.string().optional(),
+        // profileImage: z.string().optional(),
       })
       .optional(),
   }),

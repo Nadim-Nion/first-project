@@ -21,8 +21,6 @@ const findLastStudentId = async () => {
     })
     .lean();
 
-  // console.log('Last Student Id: ', lastStudent); // 203003 0001
-
   return lastStudent?.id ? lastStudent.id : undefined;
 };
 
@@ -69,8 +67,6 @@ export const findLastFacultyId = async () => {
     })
     .lean();
 
-  console.log('lastFaculty in user.utils:', lastFaculty);
-
   return lastFaculty?.id ? lastFaculty.id.substring(2) : undefined;
 };
 
@@ -105,8 +101,6 @@ export const findLastAdminId = async () => {
       createdAt: -1,
     })
     .lean();
-
-  // console.log('lastAdmin in user.utils:', lastAdmin);
 
   return lastAdmin?.id ? lastAdmin.id.substring(2) : undefined;
 };
