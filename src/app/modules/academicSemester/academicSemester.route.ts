@@ -16,13 +16,19 @@ router.post(
   AcademicSemesterControllers.createAcademicSemester,
 );
 
-router.get('/', AcademicSemesterControllers.getAllAcademicSemesters);
+router.get(
+  '/',
+  auth(UserRole.superAdmin, UserRole.admin, UserRole.faculty, UserRole.student),
+  AcademicSemesterControllers.getAllAcademicSemesters,
+);
 router.get(
   '/:semesterId',
+  auth(UserRole.superAdmin, UserRole.admin, UserRole.faculty, UserRole.student),
   AcademicSemesterControllers.getSingleAcademicSemester,
 );
 router.patch(
   '/:semesterId',
+  auth(UserRole.superAdmin, UserRole.admin),
   validateRequest(
     AcademicSemesterValidations.updateAcademicSemesterValidationSchema,
   ),
