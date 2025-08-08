@@ -138,7 +138,8 @@ const getAllOfferedCoursesFromDB = async (query: Record<string, unknown>) => {
     .fieldLimiting();
 
   const result = await offeredCourseQuery.modelQuery;
-  return result;
+  const meta = await offeredCourseQuery.countTotal();
+  return { meta, result };
 };
 
 const getMyOfferedCoursesFromDB = async (userId: string) => {
@@ -149,11 +150,38 @@ const getMyOfferedCoursesFromDB = async (userId: string) => {
   }
 
   // Find the current ongoing semester
-  const currentOngoingSemester = await SemesterRegistration.findOne({
-    status: 'ONGOING',
-  });
+  const currentOngoingRegistrationSemester = await SemesterRegistration.findOne(
+    {
+      status: 'ONGOING',
+    },
+  );
 
-  return currentOngoingSemester;
+  if (!currentOngoingRegistrationSemester) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'There is no ongoing registration semester',
+    );
+  }
+
+  const result = await OfferedCourse.aggregate([
+    {
+      $match: {
+        semesterRegistration: currentOngoingRegistrationSemester?._id,
+        academicFaculty: student?.academicFaculty,
+        academicDepartment: student?.academicDepartment,
+      },
+    },
+    {
+      $lookup: {
+        from: 'courses',
+        localField: 'course',
+        foreignField: '_id',
+        as: 'course',
+      },
+    },
+  ]);
+
+  return result;
 };
 
 const getSingleOfferedCourseFromDB = async (id: string) => {
