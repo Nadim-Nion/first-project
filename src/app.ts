@@ -22,7 +22,7 @@ app.use(
 app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello Programming Hero UNiversity!');
+  res.send('Hello Programming Hero University!');
 });
 
 // Not Found Route
