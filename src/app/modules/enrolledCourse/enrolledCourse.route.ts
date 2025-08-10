@@ -16,6 +16,12 @@ router.post(
   EnrolledCourseControllers.createEnrolledCourse,
 );
 
+router.get(
+  '/my-enrolled-courses',
+  auth(UserRole.student),
+  EnrolledCourseControllers.getMyEnrolledCourses,
+);
+
 router.patch(
   '/update-enrolled-course-marks',
   auth(UserRole.superAdmin, UserRole.admin, UserRole.faculty),
