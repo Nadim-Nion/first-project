@@ -4,6 +4,16 @@ This is my first project built using **TypeScript**, **Mongoose**, and **Express
 
 ---
 
+## Admin Credentials
+
+```bash
+ID: A-0001
+Email: nion@gmail.com
+Password: admin123
+```
+
+---
+
 ## Features
 
 - **Mongoose Middleware**:

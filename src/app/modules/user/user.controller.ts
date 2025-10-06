@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
-import { UserServices } from './user.service';
-import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { UserServices } from './user.service';
 
 const createStudent: RequestHandler = catchAsync(async (req, res) => {
   const file = req.file;
