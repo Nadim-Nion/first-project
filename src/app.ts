@@ -1,10 +1,10 @@
 // const express = require('express')
-import express, { Application, Request, Response } from 'express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import express, { Application, Request, Response } from 'express';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
-import cookieParser from 'cookie-parser';
 const app: Application = express();
 // const port = 3000
 
