@@ -18,7 +18,7 @@ const createUserNameValidationSchema = z.object({
   lastName: z
     .string()
     .min(1, 'Last Name is required')
-    .refine((value) => /^[a-zA-Z]+$/.test(value), {
+    .refine((value) => /^[a-zA-Z\s'-]+$/.test(value), {
       message: 'Last Name is not valid',
     }),
 });
@@ -47,10 +47,10 @@ const createStudentValidationSchema = z.object({
     password: z.string().min(1, 'Password is required').max(20).optional(),
     student: z.object({
       name: createUserNameValidationSchema,
-      gender: z.enum(['Male', 'Female', 'Other'], {
+      gender: z.enum(['male', 'female', 'other'], {
         errorMap: () => ({ message: 'Gender is not valid' }),
       }),
-      dateOfBirth: z.string().date().optional(),
+      dateOfBirth: z.coerce.date().optional(),
       email: z.string().min(1, 'Email is required').email('Email is not valid'),
       contactNo: z.string().min(1, 'Contact Number is required'),
       emergencyContactNo: z
@@ -117,7 +117,7 @@ const updateStudentValidationSchema = z.object({
       .object({
         name: updateUserNameValidationSchema.optional(),
         gender: z
-          .enum(['Male', 'Female', 'Other'], {
+          .enum(['male', 'female', 'other'], {
             errorMap: () => ({ message: 'Gender is not valid' }),
           })
           .optional(),
