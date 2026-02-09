@@ -67,7 +67,6 @@ const deleteFacultyFromDB = async (id: string) => {
       { isDeleted: true },
       { new: true, session },
     );
-    console.log('deletedFaculty in faculty.service', deletedFaculty);
 
     if (!deletedFaculty) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete faculty');
@@ -86,7 +85,6 @@ const deleteFacultyFromDB = async (id: string) => {
         session,
       },
     );
-    console.log('deletedUser in faculty.service', deletedUser);
 
     if (!deletedUser) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete user');

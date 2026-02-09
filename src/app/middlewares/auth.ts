@@ -28,11 +28,9 @@ const auth = (...requiredRoles: TUserRole[]) => {
 
     // Check whether the user has the permission to access the resource
     const { userId, role, iat } = decoded;
-    // console.log('decoded:', decoded);
 
     // check the user is exist or not
     const user = await User.isUserExistsByCustomId(userId);
-    // console.log('user:', user);
 
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'User not found');

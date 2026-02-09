@@ -23,7 +23,6 @@ export const hasTimeConflict = (
     */
 
     if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
-    //   console.log('Conflict found');
       return true; // Conflict found
     }
   }

@@ -185,13 +185,11 @@ studentSchema.virtual('fullName').get(function () {
 
 // Query Middleware
 studentSchema.pre('find', function (next) {
-  // console.log(this);
   this.find({ isDeleted: { $ne: true } });
   next();
 });
 
 studentSchema.pre('findOne', function (next) {
-  // console.log(this);
   this.findOne({ isDeleted: { $ne: true } });
   next();
 });

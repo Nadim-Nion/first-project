@@ -11,8 +11,8 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   /* {presentAddress: {$regex: query.searchTerm, $options: "i"}} */
   /* {"name.firstName": {$regex: query.searchTerm, $options: "i"}} */
 
-  // console.log('base query:', query);
-  // const queryObject = { ...query }; // copy the query object from base query
+ 
+// const queryObject = { ...query }; // copy the query object from base query
 
   // const studentSearchableFields = ['email', 'presentAddress', 'name.firstName'];
 
@@ -34,8 +34,6 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   // const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
   // excludeFields.forEach((el) => delete queryObject[el]);
 
-  // console.log("query:", query);
-  // console.log('queryObject:', queryObject);
 
   // const filterQuery = searchQuery
   //   .find(queryObject)
@@ -162,8 +160,6 @@ const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
       modifiedStudentData[`localGuardian.${key}`] = value;
     }
   }
-
-  // console.log('modifiedStudentData', modifiedStudentData);
 
   const result = await Student.findByIdAndUpdate(id, modifiedStudentData, {
     new: true,

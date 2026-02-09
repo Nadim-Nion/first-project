@@ -137,11 +137,9 @@ const refreshToken = async (token: string) => {
 
   // Check whether the user has the permission to access the resource
   const { userId, iat } = decoded;
-  // console.log('decoded:', decoded);
 
   // check the user is exist or not
   const user = await User.isUserExistsByCustomId(userId);
-  // console.log('user:', user);
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
@@ -192,7 +190,6 @@ const refreshToken = async (token: string) => {
 const forgetPassword = async (userId: string) => {
   // check the user is exist or not
   const user = await User.isUserExistsByCustomId(userId);
-  // console.log('user:', user);
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
@@ -241,7 +238,6 @@ const resetPassword = async (
 ) => {
   // check the user is exist or not
   const user = await User.isUserExistsByCustomId(id);
-  // console.log('user:', user);
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');

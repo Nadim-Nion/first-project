@@ -20,7 +20,7 @@ export const sendImageToCloudinary = async (
       public_id: imageName,
     })
     .catch((error) => {
-      console.log(error);
+      // console.log(error);
       throw error;
     });
 

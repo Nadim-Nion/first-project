@@ -71,7 +71,6 @@ const deleteAdminFromDB = async (id: string) => {
         session,
       },
     );
-    // console.log('deletedAdmin in admin.service:', deletedAdmin);
 
     if (!deletedAdmin) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete admin');

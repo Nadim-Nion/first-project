@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import mongoose from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { courseSearchableFields } from './course.constant';
@@ -61,7 +63,7 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update course');
     }
 
-    // console.log('preRequisiteCourses:', preRequisiteCourses);
+   
 
     // Check if there is or are pre-requisite courses to update
     if (preRequisiteCourses && preRequisiteCourses.length > 0) {
@@ -70,7 +72,7 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
         .filter((el) => el.course && el.isDeleted)
         .map((el) => el.course);
 
-      // console.log('filteredPreRequisiteCourses:', filteredPreRequisiteCourses);
+     
 
       const deletedPreRequisiteCourses = await Course.findByIdAndUpdate(
         id,
@@ -97,7 +99,7 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
         (el) => el.course && !el.isDeleted,
       );
 
-      // console.log('newPreRequisites:', newPreRequisites);
+      
 
       const newPreRequisiteCourses = await Course.findByIdAndUpdate(
         id,
@@ -129,7 +131,6 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
 
     return result;
   } catch (err) {
-    console.log('err:', err);
     await session.abortTransaction();
     await session.endSession();
     throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update course');

@@ -89,7 +89,6 @@ const createStudentIntoDB = async (
 
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
-    // console.log('newUser', newUser);
 
     // Create a student (Transaction-2)
     if (!newUser.length) {
@@ -100,7 +99,6 @@ const createStudentIntoDB = async (
     payload.user = newUser[0]._id; // reference _id
 
     const newStudent = await Student.create([payload], { session });
-    // console.log('newStudent', newStudent);
 
     if (!newStudent.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create student.');
@@ -172,7 +170,6 @@ const createFacultyIntoDB = async (
 
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
-    // console.log('newUser in user.service', newUser);
 
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user.');
@@ -184,7 +181,6 @@ const createFacultyIntoDB = async (
 
     // Create a faculty (Transaction-2)
     const newFaculty = await Faculty.create([payload], { session });
-    // console.log('newFaculty in user.service', newFaculty);
 
     if (!newFaculty.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create faculty.');
@@ -239,7 +235,6 @@ const createAdminIntoDB = async (
 
     // Create a user (Transaction-1)
     const newUser = await User.create([userData], { session });
-    // console.log('newUser in user.service:', newUser);
 
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
@@ -251,7 +246,6 @@ const createAdminIntoDB = async (
 
     // Create a admin (Transaction-2)
     const newAdmin = await Admin.create([payload], { session });
-    // console.log('newAdmin in user.service:', newAdmin);
 
     if (!newAdmin.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create admin');

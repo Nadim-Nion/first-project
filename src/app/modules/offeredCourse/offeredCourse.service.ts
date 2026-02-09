@@ -110,7 +110,6 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     faculty,
     days: { $in: days },
   }).select('days startTime endTime');
-  // console.log('assignedSchedule in offeredCourse.service:', assignedSchedule);
 
   const newSchedule = {
     days,
@@ -369,7 +368,6 @@ const updateOfferedCourseIntoDB = async (
     faculty,
     days: { $in: days },
   }).select('days startTime endTime');
-  // console.log('assignedSchedule in offeredCourse.service:', assignedSchedule);
 
   const newSchedule = {
     days,
