@@ -1,12 +1,12 @@
-import config from '../../config';
-import AppError from '../../errors/AppError';
-import { User } from '../user/user.model';
-import { TLoginUser } from './auth.interface';
+import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import { createToken, verifyToken } from './auth.utils';
+import config from '../../config';
+import AppError from '../../errors/AppError';
 import { sendEmail } from '../../utils/sendEmail';
+import { User } from '../user/user.model';
+import { TLoginUser } from './auth.interface';
+import { createToken, verifyToken } from './auth.utils';
 
 const loginUser = async (payload: TLoginUser) => {
   // check the user is exist or not
@@ -100,7 +100,7 @@ const changePassword = async (
 
   // Check the password is correct or not
   if (!(await User.isPasswordMatched(payload?.oldPassword, user?.password))) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
+    throw new AppError(httpStatus.FORBIDDEN, 'Password is incorrect');
   }
 
   // Hash the new password before storing to the DB
