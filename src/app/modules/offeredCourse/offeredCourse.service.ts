@@ -1,15 +1,15 @@
+import httpStatus from 'http-status';
+import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { AcademicFaculty } from '../academicFaculty/academicFaculty.model';
 import { Course } from '../course/course.model';
 import { Faculty } from '../faculty/faculty.model';
 import { SemesterRegistration } from '../semesterRegistration/semesterRegistration.model';
+import { Student } from '../student/student.model';
 import { TOfferedCourse } from './offeredCourse.interface';
 import { OfferedCourse } from './offeredCourse.model';
-import httpStatus from 'http-status';
 import { hasTimeConflict } from './offeredCourse.utils';
-import QueryBuilder from '../../builder/QueryBuilder';
-import { Student } from '../student/student.model';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -130,7 +130,12 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
 };
 
 const getAllOfferedCoursesFromDB = async (query: Record<string, unknown>) => {
-  const offeredCourseQuery = new QueryBuilder(OfferedCourse.find().populate('semesterRegistration academicSemester academicFaculty academicDepartment course faculty'), query)
+  const offeredCourseQuery = new QueryBuilder(
+    OfferedCourse.find().populate(
+      'semesterRegistration academicSemester academicFaculty academicDepartment course faculty',
+    ),
+    query,
+  )
     .filter()
     .sort()
     .paginate()
