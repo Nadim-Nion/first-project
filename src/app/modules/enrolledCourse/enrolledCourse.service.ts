@@ -251,13 +251,14 @@ const updateEnrolledCourseMarksIntoDB = async (
   const modifiedData: Record<string, unknown> = {
     ...courseMarks,
   };
+ 
 
   if (courseMarks?.finalTerm) {
-    const { classTest1, midterm, classTest2, finalTerm } = courseMarks;
+    const { classTest1, midTerm, classTest2, finalTerm } = courseMarks;
 
-    const totalMarks = classTest1 + midterm + classTest2 + finalTerm;
+    const totalMarks = classTest1 + midTerm + classTest2 + finalTerm;
     // Math.ceil(classTest1 * 0.1) +
-    // Math.ceil(midterm * 0.3) +
+    // Math.ceil(midTerm * 0.3) +
     // Math.ceil(classTest2 * 0.1) +
     // Math.ceil(finalTerm * 0.5);
 

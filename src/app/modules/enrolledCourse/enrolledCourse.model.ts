@@ -1,9 +1,9 @@
 import { model, Schema } from 'mongoose';
-import {
-  TEnrolledCourseMarks,
-  TEnrolledCourse,
-} from './enrolledCourse.interface';
 import { Grade } from './enrolledCourse.constant';
+import {
+  TEnrolledCourse,
+  TEnrolledCourseMarks,
+} from './enrolledCourse.interface';
 
 const courseMarksSchema = new Schema<TEnrolledCourseMarks>(
   {
@@ -13,7 +13,7 @@ const courseMarksSchema = new Schema<TEnrolledCourseMarks>(
       min: 0,
       max: 10,
     },
-    midterm: {
+    midTerm: {
       type: Number,
       default: 0,
       min: 0,
