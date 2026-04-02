@@ -1,15 +1,15 @@
-import AppError from '../../errors/AppError';
-import { OfferedCourse } from '../offeredCourse/offeredCourse.model';
-import { TEnrolledCourse } from './enrolledCourse.interface';
 import httpStatus from 'http-status';
-import { EnrolledCourse } from './enrolledCourse.model';
-import { Student } from '../student/student.model';
 import mongoose from 'mongoose';
-import { SemesterRegistration } from '../semesterRegistration/semesterRegistration.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import AppError from '../../errors/AppError';
 import { Course } from '../course/course.model';
 import { Faculty } from '../faculty/faculty.model';
+import { OfferedCourse } from '../offeredCourse/offeredCourse.model';
+import { SemesterRegistration } from '../semesterRegistration/semesterRegistration.model';
+import { Student } from '../student/student.model';
+import { TEnrolledCourse } from './enrolledCourse.interface';
+import { EnrolledCourse } from './enrolledCourse.model';
 import { calculateGradeAndPoints } from './enrolledCourse.utils';
-import QueryBuilder from '../../builder/QueryBuilder';
 
 const createEnrolledCourseIntoDB = async (
   userId: string,
