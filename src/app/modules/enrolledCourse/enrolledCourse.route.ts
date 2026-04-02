@@ -1,9 +1,9 @@
 import express from 'express';
-import validateRequest from '../../middlewares/validateRequest';
-import { EnrolledCourseValidations } from './enrolledCourse.validation';
-import { EnrolledCourseControllers } from './enrolledCourse.controller';
 import auth from '../../middlewares/auth';
+import validateRequest from '../../middlewares/validateRequest';
 import { UserRole } from '../user/user.constant';
+import { EnrolledCourseControllers } from './enrolledCourse.controller';
+import { EnrolledCourseValidations } from './enrolledCourse.validation';
 
 const router = express.Router();
 
@@ -29,6 +29,12 @@ router.patch(
     EnrolledCourseValidations.updateEnrolledCourseValidationSchema,
   ),
   EnrolledCourseControllers.updateEnrolledCourseMarks,
+);
+
+router.get(
+  '/faculty-enrolled-courses',
+  auth(UserRole.faculty),
+  EnrolledCourseControllers.getAllFacultyEnrolledCourses,
 );
 
 export const EnrolledCourseRoutes = router;
